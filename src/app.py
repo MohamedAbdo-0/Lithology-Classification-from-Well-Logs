@@ -27,14 +27,6 @@ model, medians, ranges, features = load_artifacts()
 # CONFIGURATION
 # ============================================================
 
-MODEL_DIR = r"C:\Users\Albostan\Projects\adnoc_lithology_ml\models"
-
-st.set_page_config(
-    page_title="Lithology AI | Well Log Intelligence",
-    page_icon="🪨",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 # ============================================================
 # PROFESSIONAL UI / CSS
