@@ -5,3 +5,4 @@ matplotlib
 streamlit
 joblib
 numpy
+huggingface_hub

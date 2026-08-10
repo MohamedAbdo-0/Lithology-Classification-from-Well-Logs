@@ -5,7 +5,24 @@ import matplotlib.pyplot as plt
 import joblib
 import json
 import os
+from huggingface_hub import hf_hub_download
 
+HF_REPO = "mohamedabdo2060/Lithology-Classification-from-Well-Logs" 
+
+@st.cache_resource
+def load_artifacts():
+    model_path = hf_hub_download(repo_id=HF_REPO, filename="random_forest_lithology.joblib")
+    medians_path = hf_hub_download(repo_id=HF_REPO, filename="train_medians.json")
+    ranges_path = hf_hub_download(repo_id=HF_REPO, filename="physical_ranges.json")
+    features_path = hf_hub_download(repo_id=HF_REPO, filename="features.json")
+
+    model = joblib.load(model_path)
+    with open(medians_path) as f: medians = json.load(f)
+    with open(ranges_path) as f: ranges = json.load(f)
+    with open(features_path) as f: features = json.load(f)
+    return model, medians, ranges, features
+
+model, medians, ranges, features = load_artifacts()
 # ============================================================
 # CONFIGURATION
 # ============================================================
