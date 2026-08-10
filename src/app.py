@@ -22,12 +22,12 @@ def load_artifacts():
     with open(features_path) as f: features = json.load(f)
     return model, medians, ranges, features
 
-model, medians, ranges, features = load_artifacts()
+
 # ============================================================
 # CONFIGURATION
 # ============================================================
 
-MODEL_DIR = r"C:\Users\Albostan\Projects\adnoc_lithology_ml\models"
+
 
 st.set_page_config(
     page_title="Lithology AI | Well Log Intelligence",
@@ -391,33 +391,7 @@ FEATURE_UNITS = {
 # MODEL LOADING
 # ============================================================
 
-@st.cache_resource
-def load_artifacts():
-    model_path = os.path.join(MODEL_DIR, "random_forest_lithology.joblib")
-    median_path = os.path.join(MODEL_DIR, "train_medians.json")
-    ranges_path = os.path.join(MODEL_DIR, "physical_ranges.json")
-    features_path = os.path.join(MODEL_DIR, "features.json")
 
-    required = [model_path, median_path, ranges_path, features_path]
-    missing = [p for p in required if not os.path.exists(p)]
-
-    if missing:
-        raise FileNotFoundError(
-            "Missing model artifacts:\n" + "\n".join(missing)
-        )
-
-    model = joblib.load(model_path)
-
-    with open(median_path, encoding="utf-8") as f:
-        medians = json.load(f)
-
-    with open(ranges_path, encoding="utf-8") as f:
-        ranges = json.load(f)
-
-    with open(features_path, encoding="utf-8") as f:
-        features = json.load(f)
-
-    return model, medians, ranges, features
 
 
 try:
