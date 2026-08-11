@@ -7,9 +7,6 @@ import json
 import os
 from huggingface_hub import hf_hub_download
 
-# ============================================================
-# CONFIGURATION
-# ============================================================
 HF_REPO = "mohamedabdo2060/Lithology-Classification-from-Well-Logs"
 
 st.set_page_config(
@@ -18,10 +15,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-# ============================================================
-# PROFESSIONAL UI / CSS
-# ============================================================
 
 st.markdown(
     """
@@ -36,7 +29,6 @@ st.markdown(
             background:
                 radial-gradient(circle at 15% 0%, rgba(78,205,196,.08), transparent 30%),
                 radial-gradient(circle at 90% 10%, rgba(82,113,255,.08), transparent 28%),
-                #0B1220;
         }
 
         .block-container {
@@ -46,19 +38,19 @@ st.markdown(
         }
 
         h1, h2, h3, h4 {
-            color: #F8FAFC !important;
+            color:
             font-weight: 700 !important;
         }
 
         p, label, .stMarkdown {
-            color: #CBD5E1;
+            color:
         }
 
         .hero {
             padding: 28px 32px;
-            border: 1px solid #24344D;
+            border: 1px solid
             border-radius: 20px;
-            background: linear-gradient(135deg, #111D31 0%, #16263D 100%);
+            background: linear-gradient(135deg,
             box-shadow: 0 12px 35px rgba(0,0,0,.22);
             margin-bottom: 22px;
         }
@@ -66,12 +58,12 @@ st.markdown(
         .hero-title {
             font-size: 34px;
             font-weight: 800;
-            color: #F8FAFC;
+            color:
             margin-bottom: 5px;
         }
 
         .hero-subtitle {
-            color: #94A3B8;
+            color:
             font-size: 15px;
             line-height: 1.6;
         }
@@ -82,45 +74,45 @@ st.markdown(
             border-radius: 999px;
             background: rgba(78,205,196,.12);
             border: 1px solid rgba(78,205,196,.28);
-            color: #5EEAD4;
+            color:
             font-size: 12px;
             font-weight: 700;
             margin-right: 6px;
         }
 
         div[data-testid="stMetric"] {
-            background: linear-gradient(145deg, #111C2E, #16243A);
-            border: 1px solid #263852;
+            background: linear-gradient(145deg,
+            border: 1px solid
             border-radius: 15px;
             padding: 17px 16px;
             box-shadow: 0 7px 20px rgba(0,0,0,.14);
         }
 
         div[data-testid="stMetric"]:hover {
-            border-color: #3A8F8A;
+            border-color:
             transform: translateY(-2px);
             transition: .2s ease;
         }
 
         div[data-testid="stMetricValue"] {
-            color: #5EEAD4 !important;
+            color:
             font-weight: 800 !important;
         }
 
         div[data-testid="stMetricLabel"] {
-            color: #94A3B8 !important;
+            color:
             font-weight: 600;
         }
 
         .stTabs [data-baseweb="tab-list"] {
             gap: 7px;
-            background: #0F1929;
+            background:
             padding: 7px;
             border-radius: 13px;
         }
 
         .stTabs [data-baseweb="tab"] {
-            color: #94A3B8;
+            color:
             background: transparent;
             border-radius: 9px;
             padding: 10px 18px;
@@ -128,13 +120,13 @@ st.markdown(
         }
 
         .stTabs [aria-selected="true"] {
-            color: #5EEAD4 !important;
-            background: #172A3B !important;
+            color:
+            background:
         }
 
         .stButton > button {
-            background: linear-gradient(135deg, #4ECDC4, #35B8B0);
-            color: #07131E;
+            background: linear-gradient(135deg,
+            color:
             border: none;
             border-radius: 9px;
             font-weight: 800;
@@ -148,22 +140,22 @@ st.markdown(
         }
 
         .panel {
-            background: #111C2E;
-            border: 1px solid #263852;
+            background:
+            border: 1px solid
             border-radius: 15px;
             padding: 20px;
             margin: 8px 0 16px 0;
         }
 
         .section-title {
-            color: #F8FAFC;
+            color:
             font-size: 18px;
             font-weight: 750;
             margin-bottom: 4px;
         }
 
         .section-caption {
-            color: #64748B;
+            color:
             font-size: 12px;
             margin-bottom: 14px;
         }
@@ -171,33 +163,33 @@ st.markdown(
         .success-box {
             background: rgba(16,185,129,.10);
             border: 1px solid rgba(16,185,129,.25);
-            border-left: 4px solid #10B981;
+            border-left: 4px solid
             border-radius: 10px;
             padding: 13px 16px;
-            color: #A7F3D0;
+            color:
         }
 
         .warning-box {
             background: rgba(245,158,11,.10);
             border: 1px solid rgba(245,158,11,.25);
-            border-left: 4px solid #F59E0B;
+            border-left: 4px solid
             border-radius: 10px;
             padding: 13px 16px;
-            color: #FDE68A;
+            color:
         }
 
         .danger-box {
             background: rgba(239,68,68,.10);
             border: 1px solid rgba(239,68,68,.25);
-            border-left: 4px solid #EF4444;
+            border-left: 4px solid
             border-radius: 10px;
             padding: 13px 16px;
-            color: #FCA5A5;
+            color:
         }
 
         .prediction-card {
-            background: linear-gradient(145deg, #12283A, #142E3A);
-            border: 1px solid #2A5E61;
+            background: linear-gradient(145deg,
+            border: 1px solid
             border-radius: 18px;
             padding: 24px;
             text-align: center;
@@ -205,7 +197,7 @@ st.markdown(
         }
 
         .prediction-label {
-            color: #94A3B8;
+            color:
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
@@ -213,46 +205,46 @@ st.markdown(
         }
 
         .prediction-name {
-            color: #5EEAD4;
+            color:
             font-size: 30px;
             font-weight: 800;
             margin: 7px 0;
         }
 
         .prediction-confidence {
-            color: #E2E8F0;
+            color:
             font-size: 17px;
             font-weight: 700;
         }
 
         .info-card {
-            background: #0F1A2B;
-            border: 1px solid #263852;
+            background:
+            border: 1px solid
             border-radius: 13px;
             padding: 15px 17px;
             margin-top: 8px;
         }
 
         .info-card-title {
-            color: #5EEAD4;
+            color:
             font-weight: 750;
             margin-bottom: 5px;
         }
 
         [data-testid="stSidebar"] {
-            background: #08111E;
-            border-right: 1px solid #1F2E43;
+            background:
+            border-right: 1px solid
         }
 
         [data-testid="stFileUploader"] {
-            background: #101B2D;
-            border: 1.5px dashed #34506C;
+            background:
+            border: 1.5px dashed
             border-radius: 13px;
             padding: 10px;
         }
 
         .footer {
-            color: #64748B;
+            color:
             text-align: center;
             font-size: 12px;
             padding-top: 12px;
@@ -261,10 +253,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-# ============================================================
-# GEOLOGICAL REFERENCE
-# ============================================================
 
 LITHOLOGY_INFO = {
     "Shale": (
@@ -365,10 +353,6 @@ FEATURE_UNITS = {
     "PEF": "barns/e",
 }
 
-# ============================================================
-# MODEL LOADING (single source of truth — Hugging Face Hub)
-# ============================================================
-
 @st.cache_resource
 def load_artifacts():
     model_path = hf_hub_download(repo_id=HF_REPO, filename="random_forest_lithology.joblib")
@@ -389,7 +373,6 @@ def load_artifacts():
 
     return model, medians, ranges, features
 
-
 try:
     model, medians, ranges, features = load_artifacts()
     model_loaded = True
@@ -398,7 +381,6 @@ except Exception as exc:
     model = medians = ranges = features = None
     st.error(f"Unable to load model artifacts: {exc}")
     st.stop()
-
 
 def clean_and_impute(df):
     """Apply physical-range validation and training-median imputation."""
@@ -412,7 +394,6 @@ def clean_and_impute(df):
         X_new[col] = X_new[col].fillna(medians[col])
 
     return X_new
-
 
 def predict_with_probabilities(df):
     """Return predictions, confidence, top-3 classes and probability matrix."""
@@ -439,7 +420,6 @@ def predict_with_probabilities(df):
 
     return predictions, confidences, top3_text, proba, classes
 
-
 def confidence_level(value):
     if value >= 0.75:
         return "High"
@@ -447,14 +427,12 @@ def confidence_level(value):
         return "Moderate"
     return "Low"
 
-
 def confidence_color_class(value):
     if value >= 0.75:
         return "success-box"
     if value >= 0.40:
         return "warning-box"
     return "danger-box"
-
 
 def make_bar_chart(series, title, xlabel="", top_n=None):
     """Create a clean horizontal bar chart."""
@@ -492,11 +470,6 @@ def make_bar_chart(series, title, xlabel="", top_n=None):
 
     fig.tight_layout()
     return fig
-
-
-# ============================================================
-# SIDEBAR
-# ============================================================
 
 with st.sidebar:
     st.markdown("## 🪨 Lithology AI")
@@ -547,10 +520,6 @@ with st.sidebar:
         "professional geological interpretation."
     )
 
-# ============================================================
-# HERO HEADER
-# ============================================================
-
 st.markdown(
     """
     <div class="hero">
@@ -577,10 +546,6 @@ tab_batch, tab_manual, tab_performance = st.tabs(
         "📊 Model Performance",
     ]
 )
-
-# ============================================================
-# TAB 1 — BATCH PREDICTION
-# ============================================================
 
 with tab_batch:
 
@@ -1022,11 +987,6 @@ with tab_batch:
                 use_container_width=True,
             )
 
-
-# ============================================================
-# TAB 2 — SINGLE READING
-# ============================================================
-
 with tab_manual:
 
     st.markdown('<div class="section-title">Single-point lithology prediction</div>', unsafe_allow_html=True)
@@ -1179,11 +1139,6 @@ with tab_manual:
         st.pyplot(fig_prob, use_container_width=True)
         plt.close(fig_prob)
 
-
-# ============================================================
-# TAB 3 — MODEL PERFORMANCE
-# ============================================================
-
 with tab_performance:
 
     st.markdown('<div class="section-title">Model performance & transparency</div>', unsafe_allow_html=True)
@@ -1291,10 +1246,6 @@ with tab_performance:
     st.write("• Chalk can be confused with Sandstone because of overlapping porosity signatures.")
     st.write("• Dolomite performance is affected by incomplete log coverage in parts of the training data.")
     st.write("• Low-confidence predictions should receive additional geological review.")
-
-# ============================================================
-# FOOTER
-# ============================================================
 
 st.markdown("---")
 st.markdown(
