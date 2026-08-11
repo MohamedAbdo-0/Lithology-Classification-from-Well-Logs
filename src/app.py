@@ -7,27 +7,10 @@ import json
 import os
 from huggingface_hub import hf_hub_download
 
-HF_REPO = "mohamedabdo2060/Lithology-Classification-from-Well-Logs" 
-
-@st.cache_resource
-def load_artifacts():
-    model_path = hf_hub_download(repo_id=HF_REPO, filename="random_forest_lithology.joblib")
-    medians_path = hf_hub_download(repo_id=HF_REPO, filename="train_medians.json")
-    ranges_path = hf_hub_download(repo_id=HF_REPO, filename="physical_ranges.json")
-    features_path = hf_hub_download(repo_id=HF_REPO, filename="features.json")
-
-    model = joblib.load(model_path)
-    with open(medians_path) as f: medians = json.load(f)
-    with open(ranges_path) as f: ranges = json.load(f)
-    with open(features_path) as f: features = json.load(f)
-    return model, medians, ranges, features
-
-
 # ============================================================
 # CONFIGURATION
 # ============================================================
-
-
+HF_REPO = "mohamedabdo2060/Lithology-Classification-from-Well-Logs"
 
 st.set_page_config(
     page_title="Lithology AI | Well Log Intelligence",
@@ -71,7 +54,6 @@ st.markdown(
             color: #CBD5E1;
         }
 
-        /* Header */
         .hero {
             padding: 28px 32px;
             border: 1px solid #24344D;
@@ -106,7 +88,6 @@ st.markdown(
             margin-right: 6px;
         }
 
-        /* KPI cards */
         div[data-testid="stMetric"] {
             background: linear-gradient(145deg, #111C2E, #16243A);
             border: 1px solid #263852;
@@ -131,7 +112,6 @@ st.markdown(
             font-weight: 600;
         }
 
-        /* Tabs */
         .stTabs [data-baseweb="tab-list"] {
             gap: 7px;
             background: #0F1929;
@@ -152,7 +132,6 @@ st.markdown(
             background: #172A3B !important;
         }
 
-        /* Buttons */
         .stButton > button {
             background: linear-gradient(135deg, #4ECDC4, #35B8B0);
             color: #07131E;
@@ -168,7 +147,6 @@ st.markdown(
             transform: translateY(-1px);
         }
 
-        /* Containers */
         .panel {
             background: #111C2E;
             border: 1px solid #263852;
@@ -388,10 +366,28 @@ FEATURE_UNITS = {
 }
 
 # ============================================================
-# MODEL LOADING
+# MODEL LOADING (single source of truth — Hugging Face Hub)
 # ============================================================
 
+@st.cache_resource
+def load_artifacts():
+    model_path = hf_hub_download(repo_id=HF_REPO, filename="random_forest_lithology.joblib")
+    median_path = hf_hub_download(repo_id=HF_REPO, filename="train_medians.json")
+    ranges_path = hf_hub_download(repo_id=HF_REPO, filename="physical_ranges.json")
+    features_path = hf_hub_download(repo_id=HF_REPO, filename="features.json")
 
+    model = joblib.load(model_path)
+
+    with open(median_path, encoding="utf-8") as f:
+        medians = json.load(f)
+
+    with open(ranges_path, encoding="utf-8") as f:
+        ranges = json.load(f)
+
+    with open(features_path, encoding="utf-8") as f:
+        features = json.load(f)
+
+    return model, medians, ranges, features
 
 
 try:
@@ -622,13 +618,8 @@ with tab_batch:
             )
             st.stop()
 
-        # Ensure model inputs are numeric.
         for col in features:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-
-        # --------------------------------------------------------
-        # INPUT DATA QUALITY
-        # --------------------------------------------------------
 
         with st.expander("🔎 Input data quality", expanded=False):
             q1, q2, q3, q4 = st.columns(4)
@@ -666,10 +657,6 @@ with tab_batch:
                 hide_index=True,
             )
 
-        # --------------------------------------------------------
-        # PREDICTION
-        # --------------------------------------------------------
-
         with st.spinner("Validating logs and running model inference..."):
             preds, confs, top3, proba, classes = predict_with_probabilities(df)
 
@@ -677,10 +664,6 @@ with tab_batch:
         df["Confidence"] = confs
         df["Confidence Level"] = [confidence_level(x) for x in confs]
         df["Top-3 Predictions"] = top3
-
-        # --------------------------------------------------------
-        # SUMMARY KPIs
-        # --------------------------------------------------------
 
         avg_conf = float(df["Confidence"].mean())
         low_conf_pct = float((df["Confidence"] < 0.40).mean() * 100)
@@ -710,10 +693,6 @@ with tab_batch:
                 'predictions have confidence at or above 40%.</div>',
                 unsafe_allow_html=True,
             )
-
-        # --------------------------------------------------------
-        # DISTRIBUTION + CONFIDENCE
-        # --------------------------------------------------------
 
         st.markdown("### Prediction analytics")
 
@@ -764,10 +743,6 @@ with tab_batch:
             fig_conf.tight_layout()
             st.pyplot(fig_conf, use_container_width=True)
             plt.close(fig_conf)
-
-        # --------------------------------------------------------
-        # DETAILED RESULTS
-        # --------------------------------------------------------
 
         st.markdown("### Detailed prediction results")
 
@@ -826,10 +801,6 @@ with tab_batch:
             hide_index=True,
         )
 
-        # --------------------------------------------------------
-        # UNCERTAIN INTERVALS
-        # --------------------------------------------------------
-
         st.markdown("### ⚠️ Most uncertain predictions")
 
         uncertain = df.sort_values("Confidence").head(20)
@@ -856,10 +827,6 @@ with tab_batch:
             use_container_width=True,
             hide_index=True,
         )
-
-        # --------------------------------------------------------
-        # WELL SUMMARY
-        # --------------------------------------------------------
 
         if "WELL" in df.columns:
 
@@ -888,10 +855,6 @@ with tab_batch:
                 use_container_width=True,
                 hide_index=False,
             )
-
-        # --------------------------------------------------------
-        # WELL LOG TRACK VIEW
-        # --------------------------------------------------------
 
         if "WELL" in df.columns and "DEPTH" in df.columns:
 
@@ -948,7 +911,6 @@ with tab_batch:
                         for spine in ax.spines.values():
                             spine.set_color("#263852")
 
-                    # Lithology track
                     unique_liths = list(
                         well_df["Predicted Lithology"].dropna().unique()
                     )
@@ -960,7 +922,6 @@ with tab_batch:
                     }
 
                     y = well_df["DEPTH"].to_numpy()
-                    x = np.arange(len(well_df))
 
                     axes[-1].scatter(
                         np.zeros(len(well_df)),
@@ -1010,10 +971,6 @@ with tab_batch:
                     st.pyplot(fig_tracks, use_container_width=True)
                     plt.close(fig_tracks)
 
-        # --------------------------------------------------------
-        # GEOLOGICAL REFERENCE
-        # --------------------------------------------------------
-
         st.markdown("### Geological reference")
 
         predicted_classes = sorted(df["Predicted Lithology"].unique())
@@ -1031,10 +988,6 @@ with tab_batch:
                 st.markdown(f"**Description:** {desc}")
                 if response:
                     st.markdown(f"**Typical log response:** {response}")
-
-        # --------------------------------------------------------
-        # DOWNLOADS
-        # --------------------------------------------------------
 
         st.markdown("### Export results")
 
@@ -1086,49 +1039,19 @@ with tab_manual:
         c1, c2, c3, c4, c5 = st.columns(5)
 
         with c1:
-            gr = st.number_input(
-                "GR (API)",
-                min_value=0.0,
-                max_value=300.0,
-                value=75.0,
-                step=1.0,
-            )
+            gr = st.number_input("GR (API)", min_value=0.0, max_value=300.0, value=75.0, step=1.0)
 
         with c2:
-            nphi = st.number_input(
-                "NPHI (v/v)",
-                min_value=0.0,
-                max_value=1.0,
-                value=.25,
-                step=.01,
-            )
+            nphi = st.number_input("NPHI (v/v)", min_value=0.0, max_value=1.0, value=.25, step=.01)
 
         with c3:
-            rhob = st.number_input(
-                "RHOB (g/cc)",
-                min_value=1.0,
-                max_value=3.2,
-                value=2.40,
-                step=.01,
-            )
+            rhob = st.number_input("RHOB (g/cc)", min_value=1.0, max_value=3.2, value=2.40, step=.01)
 
         with c4:
-            dt = st.number_input(
-                "DT (µs/ft)",
-                min_value=40.0,
-                max_value=240.0,
-                value=100.0,
-                step=1.0,
-            )
+            dt = st.number_input("DT (µs/ft)", min_value=40.0, max_value=240.0, value=100.0, step=1.0)
 
         with c5:
-            pef = st.number_input(
-                "PEF (barns/e)",
-                min_value=0.0,
-                max_value=15.0,
-                value=3.0,
-                step=.1,
-            )
+            pef = st.number_input("PEF (barns/e)", min_value=0.0, max_value=15.0, value=3.0, step=.1)
 
     if st.button("🔍 Classify reading", type="primary", use_container_width=True):
 
@@ -1218,11 +1141,7 @@ with tab_manual:
             "Unit": [FEATURE_UNITS.get(f, "") for f in features],
         })
 
-        st.dataframe(
-            input_display,
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.dataframe(input_display, use_container_width=True, hide_index=True)
 
         st.markdown("### Top class probabilities")
 
@@ -1234,15 +1153,9 @@ with tab_manual:
             "Probability (%)": proba[top_indices] * 100,
         })
 
-        probability_df["Probability (%)"] = probability_df[
-            "Probability (%)"
-        ].round(2)
+        probability_df["Probability (%)"] = probability_df["Probability (%)"].round(2)
 
-        st.dataframe(
-            probability_df,
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.dataframe(probability_df, use_container_width=True, hide_index=True)
 
         fig_prob, ax_prob = plt.subplots(figsize=(9, 4.8))
         fig_prob.patch.set_facecolor("#111C2E")
@@ -1253,12 +1166,7 @@ with tab_manual:
 
         ax_prob.barh(names, values, color="#4ECDC4", height=.58)
 
-        ax_prob.set_title(
-            "Model Probability Profile",
-            color="#F8FAFC",
-            fontsize=13,
-            fontweight="bold",
-        )
+        ax_prob.set_title("Model Probability Profile", color="#F8FAFC", fontsize=13, fontweight="bold")
         ax_prob.set_xlabel("Probability (%)", color="#94A3B8")
         ax_prob.tick_params(colors="#CBD5E1")
 
@@ -1333,10 +1241,7 @@ with tab_performance:
     )
 
     importance_display = pd.DataFrame({
-        "Log": [
-            FEATURE_NAMES.get(x, x)
-            for x in importance_pct.index
-        ],
+        "Log": [FEATURE_NAMES.get(x, x) for x in importance_pct.index],
         "Feature": importance_pct.index,
         "Importance (%)": importance_pct.values.round(2),
     })
@@ -1345,21 +1250,13 @@ with tab_performance:
 
     with left:
         st.pyplot(
-            make_bar_chart(
-                importance_pct,
-                "Relative Feature Importance",
-                "Importance (%)",
-            ),
+            make_bar_chart(importance_pct, "Relative Feature Importance", "Importance (%)"),
             use_container_width=True,
         )
         plt.close("all")
 
     with right:
-        st.dataframe(
-            importance_display,
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.dataframe(importance_display, use_container_width=True, hide_index=True)
 
     st.markdown("### Known model limitations")
 
@@ -1391,15 +1288,9 @@ with tab_performance:
 
     st.markdown("### Reported weak spots")
 
-    st.write(
-        "• Chalk can be confused with Sandstone because of overlapping porosity signatures."
-    )
-    st.write(
-        "• Dolomite performance is affected by incomplete log coverage in parts of the training data."
-    )
-    st.write(
-        "• Low-confidence predictions should receive additional geological review."
-    )
+    st.write("• Chalk can be confused with Sandstone because of overlapping porosity signatures.")
+    st.write("• Dolomite performance is affected by incomplete log coverage in parts of the training data.")
+    st.write("• Low-confidence predictions should receive additional geological review.")
 
 # ============================================================
 # FOOTER
